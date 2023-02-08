@@ -11,11 +11,11 @@ var React__default = /*#__PURE__*/_interopDefaultLegacy(React);
 
 const DEFAULT_ROOM = 'https://reneil.mypinata.cloud/ipfs/QmcZuYy7DNQMime4ch1LfJ4wjJr3mVQyghkDASMrXGw4oJ';
 function app() {
-  var _fields$$onClick, _fields$file;
 
   const world = hyperfy.useWorld();
   const fields = hyperfy.useFields();
   const [rooms, setRooms] = React.useState(null);
+  const [status, setStatus] = React.useState("loading");
 
   React.useEffect(() => {
     async function load() {
@@ -26,7 +26,7 @@ function app() {
           data: {
             query: `
           query {
-            raffles(first: 10, orderBy: raffleId, orderDirection: desc) {
+            raffles(first: 6, orderBy: raffleId, orderDirection: desc) {
     room {
       raffle {
         timeEnd
@@ -48,17 +48,27 @@ function app() {
         `,
           },
         })
-        console.log('raffles', resp.data.raffles);
+        //console.log('raffles', resp.data.raffles);
+        console.log(resp)
         const rooms =[];
-        let pos = -120;
+        let pos = 0;
         resp.data.raffles.forEach(id =>{
           if(!id.room.raffle.winner){
+
             rooms.push(["https://moca.mypinata.cloud/ipfs/"+id.room.model,[pos,0,0], id.room]);
-            pos = pos +100;
+            if (pos >= 0){
+              pos = (-1*pos) -100;
+            } else {
+              pos = (-1*pos);
+            }
+
+
+
           }
 
         })
         setRooms(rooms);
+        setStatus("ready")
         console.log(rooms)
       } catch (e) {
         console.error(e)
@@ -69,50 +79,39 @@ function app() {
   }, [])
 
 
-  return /*#__PURE__*/React__default["default"].createElement("app", null, rooms === null &&  /*#__PURE__*/React__default["default"].createElement("image", {
+
+
+  return /*#__PURE__*/React__default["default"].createElement("app", null, status === "loading" &&  /*#__PURE__*/React__default["default"].createElement("image", {
     src: DEFAULT_ROOM,
     position: [0,0,0]
   }), /*#__PURE__*/React__default["default"].createElement("rigidbody", {
     type: "kinematic"
-  },rooms !== null &&  /*#__PURE__*/React__default["default"].createElement("model", {
+  },status ==="ready" && rooms.length >= 1 &&  /*#__PURE__*/React__default["default"].createElement("model", {
     src: rooms[0][0],
     position: rooms[0][1],
     collision: fields.collision ? 'trimesh' : undefined
-  }),rooms !== null && rooms.length >= 2 &&  /*#__PURE__*/React__default["default"].createElement("model", {
+  }),status ==="ready" && rooms.length >= 2 &&  /*#__PURE__*/React__default["default"].createElement("model", {
     src: rooms[1][0],
     position: rooms[1][1],
     collision: fields.collision ? 'trimesh' : undefined
-  }),rooms !== null && rooms.length >= 2 && /*#__PURE__*/React__default["default"].createElement("box", {
-    color: "white",
-    position: [rooms[1][1][0],1,40],
-    size: [3.5,1.8,0.0001],
-    opacity: 0.99
-  }),rooms !== null && rooms.length >= 2 && /*#__PURE__*/React__default["default"].createElement("image", {
-    src: "https://moca.mypinata.cloud/ipfs/"+rooms[1][2].image,
-    height: 1.5,
-    position: [rooms[1][1][0]-0.8,1,40.001]
-    //onClick: onClick
-  }),rooms !== null && rooms.length >= 3 &&  /*#__PURE__*/React__default["default"].createElement("model", {
+  }),status ==="ready" && rooms.length >= 3 &&  /*#__PURE__*/React__default["default"].createElement("model", {
     src: rooms[2][0],
     position: rooms[2][1],
     collision: fields.collision ? 'trimesh' : undefined
-  }),rooms !== null && rooms.length >= 4 &&  /*#__PURE__*/React__default["default"].createElement("model", {
+  }),status ==="ready" && rooms.length >= 4 &&  /*#__PURE__*/React__default["default"].createElement("model", {
     src: rooms[3][0],
     position: rooms[3][1],
     collision: fields.collision ? 'trimesh' : undefined
-  }),rooms !== null && rooms.length >= 5 &&  /*#__PURE__*/React__default["default"].createElement("model", {
+  }),status ==="ready" && rooms.length >= 5 &&  /*#__PURE__*/React__default["default"].createElement("model", {
     src: rooms[4][0],
     position: rooms[4][1],
     collision: fields.collision ? 'trimesh' : undefined
-  }),rooms !== null && rooms.length >= 5 &&  /*#__PURE__*/React__default["default"].createElement("model", {
+  }),status ==="ready" && rooms.length >= 6 &&  /*#__PURE__*/React__default["default"].createElement("model", {
     src: rooms[5][0],
     position: rooms[5][1],
     collision: fields.collision ? 'trimesh' : undefined
-  }),rooms !== null && rooms.length >= 5 &&  /*#__PURE__*/React__default["default"].createElement("model", {
-    src: rooms[6][0],
-    position: rooms[6][1],
-    collision: fields.collision ? 'trimesh' : undefined
-  })));
+  })
+  ));
 
 }
 const initialState = {// ...
