@@ -180,7 +180,8 @@ function getStore() {
     }, {
       key: 'title',
       label: 'Title',
-      type: 'text'
+      type: 'text',
+      descriptor: true
     }, {
       key: 'description',
       label: 'Description',
