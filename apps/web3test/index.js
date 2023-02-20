@@ -45,7 +45,18 @@ function app() {
                             bgColor: "white",
                             position: [0,pos,0],
                             onClick: () => {
-                                setRoomURL(id.room.model_curated);
+                                try{
+                                    const room = world.http({
+                                        method: 'GET',
+                                        url: id.room.model_curated
+                                    })
+                                    
+                                    setRoomURL(id.room.model_curated);
+                                } catch (e){
+                                    console.error(e)
+                                    setRoomURL(id.room.model);
+                                }
+                                
                             }
                         }))
                         pos = pos-0.1
@@ -61,7 +72,7 @@ function app() {
     return React__default["default"].createElement("app", null, roomURL === null &&  React__default["default"].createElement("billboard", {axis: "y"}, React__default["default"].createElement("group", null, lines)),/*#__PURE__*/React__default["default"].createElement("rigidbody", {
         type: "kinematic"
     },roomURL !== null && React__default["default"].createElement("model",{
-        src: roomURL || "block_model.glb",
+        src: roomURL || "block-model.glb",
         collision: fields.collision ? 'trimesh' : undefined
     })))
 
