@@ -19,5 +19,62 @@ function app() {
         </app>
     )
 }
+const initialState = {// ...
+};
+function getStore() {
+    let state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+    return {
+        state,
+        actions: {
+            load(state, time) {
+                if (state.action === 'play') return;
+                state.time = time;
+                state.action = 'play';
+            }
+        },
+        // legacy non-uniform scale
+        fields:  [{
+            key: 'roomId',
+            label: 'ROOM id',
+            type: 'text',
+            instant: false
+        },{
+            key: 'ccz',
+            label: 'ROOMs',
+            type: 'switch',
+            options: [{
+                label: 'CC0',
+                value: true
+            }, {
+                label: 'My ROOMs',
+                value: false
+            }],
+            initial: true
+        },{
+            key: 'room',
+            label: 'ROOM',
+            type: 'dropdown',
+            options: options,
+        },{
+            key: 'collision',
+            label: 'Collision',
+            type: 'switch',
+            options: [{
+                label: 'On',
+                value: true
+            }, {
+                label: 'Off',
+                value: false
+            }],
+            initial: false
+        },{
+            key: '__lockedScale',
+            type: 'vec3',
+            hidden: true
+        }]
+    };
+}
 
 exports["default"] = app;
+exports.getStore = getStore;
+

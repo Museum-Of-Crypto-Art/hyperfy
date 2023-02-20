@@ -9,7 +9,6 @@ const hyperfy = require('hyperfy');
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
 var React__default = /*#__PURE__*/_interopDefaultLegacy(React);
-let options= []
 
 
 function app() {
@@ -20,7 +19,16 @@ function app() {
     const tempAddress = "0xe703f231ab056ecb99c92a1232cc1020acfc72f8";
     const [lines, setLines] = React.useState([]);
     const [roomURL, setRoomURL] = React.useState();
-    const room =
+    const room = React.useRef();
+    const [options, setOptions] = React.useState([{
+        label: 'room1',
+        value: 'room1'
+    }, {
+        label: 'room2',
+        value: 'room2'
+    }]);
+
+    
 
     React.useEffect(() => {
         async function getRooms() {
@@ -58,12 +66,13 @@ function app() {
                 }
         }
         getRooms()
+        
     },[])
-
+    
     return React__default["default"].createElement("app", null, roomURL === null &&  React__default["default"].createElement("billboard", {axis: "y"}, React__default["default"].createElement("group", null, lines)),/*#__PURE__*/React__default["default"].createElement("rigidbody", {
         type: "kinematic"
     },roomURL !== null && React__default["default"].createElement("model",{
-        src: roomURL || "block_model.glb",
+        src: roomURL || "block-model.glb",
         collision: fields.collision ? 'trimesh' : undefined
     })))
 
@@ -72,6 +81,7 @@ const initialState = {// ...
 };
 function getStore() {
     let state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
+    const options = app().options;
     return {
         state,
         actions: {
