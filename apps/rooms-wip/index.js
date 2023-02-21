@@ -5,71 +5,97 @@ Object.defineProperty(exports, '__esModule', { value: true });
 const React = require('react');
 const hyperfy = require('hyperfy');
 
+const tempAddress = "0xe703f231ab056ecb99c92a1232cc1020acfc72f8";
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
 var React__default = /*#__PURE__*/_interopDefaultLegacy(React);
 
+const all = {
+  promise: null,
+  rooms: null,
+  roomsOptions: [{ label: 'None', value: null }]
+  
+}
+
+function loadAll(http, url) {
+  if (!all.promise) {
+    all.promise = new Promise(async resolve => {
+      // fetch all parcel info
+        const data = await http({
+            method: 'GET',
+            url: url,
+            proxy: true,
+        })
+        all.rooms = data
+        console.log('rooms', all.rooms)
+      
+      
+        all.roomsOptions.length = 0
+        data.forEach(id=>{
+            all.roomsOptions.push({
+                label: id.room.title,
+                value: id.room.model_curated
+            })                       
+        })
+        console.log('rooms options', all.roomsOptions)
+        resolve()
+    })
+  }
+  return all.promise
+}
 
 function app() {
 
     const world = hyperfy.useWorld();
     const fields = hyperfy.useFields();
-    const [myRooms, setMyRooms] = React.useState(null);
-    const tempAddress = "0xe703f231ab056ecb99c92a1232cc1020acfc72f8";
-    const [lines, setLines] = React.useState([]);
-    const [roomURL, setRoomURL] = React.useState();
-    const room = React.useRef();
-    const [options, setOptions] = React.useState([{
-        label: 'room1',
-        value: 'room1'
-    }, {
-        label: 'room2',
-        value: 'room2'
-    }]);
-
-    
-
+    const roomURL = fields.room;
+    const cc0 = fields.ccz;
+    const [state, dispatch] = hyperfy.useSyncState(state => state)
+    const [ready, setReady] = React.useState(!!all.rooms)
     React.useEffect(() => {
-        async function getRooms() {
-            if (roomURL!== null){
-                return;
+        /*async function getRooms() {
+            let url = (cc0) ? "https://api.museumofcryptoart.com/oracle/rooms": "https://api.museumofcryptoart.com/oracle/"+tempAddress+"/rooms";
+            try {
+                const resp = await world.http({
+                    method: 'GET',
+                    url: url,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                console.log(rooms)
+                const temp = [{
+                    label:" ",
+                    value:null}]
+                resp.forEach(id=>{
+                    temp.push({
+                        label: id.room.title,
+                        value: id.room.model_curated
+                    })                       
+                })
+                rooms = temp
+                console.log("ROOMs:")
+                console.log(rooms)
+                dispatch('update')
+            } catch (e) {
+                console.error(e)
             }
-                try {
-                    const resp = await world.http({
-                        method: 'GET',
-                        //url: "https://api.museumofcryptoart.com/oracle/"+world.getAvatar().address+"/rooms",
-                        url: "https://api.museumofcryptoart.com/oracle/"+tempAddress+"/rooms",
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    setMyRooms(resp)
-                    const temp2 = []
-                    let pos = 0
-                    resp.forEach(id=>{
-
-                        temp2.push(React__default["default"].createElement("text", {
-                            value: id.room.title,
-                            bgColor: "white",
-                            position: [0,pos,0],
-                            onClick: () => {
-                                setRoomURL(id.room.model_curated);
-
-                            }
-                        }))
-                        pos = pos-0.1
-                    })
-                    setLines(temp2)
-                } catch (e) {
-                    console.error(e)
-                }
-        }
-        getRooms()
+    }
+    getRooms()*/
+    if (!world.isClient) return
+    //if (ready) return
+    let url = (cc0) ? "https://api.museumofcryptoart.com/oracle/rooms": "https://api.museumofcryptoart.com/oracle/"+tempAddress+"/rooms";
+    async function load() {
         
-    },[])
+        await loadAll(world.http, url)
+        setReady(true)
+      }
+    load()
     
-    return React__default["default"].createElement("app", null, roomURL === null &&  React__default["default"].createElement("billboard", {axis: "y"}, React__default["default"].createElement("group", null, lines)),/*#__PURE__*/React__default["default"].createElement("rigidbody", {
+    },[cc0])
+    
+    return React__default["default"].createElement("app", null,/*#__PURE__*/React__default["default"].createElement("rigidbody", {
         type: "kinematic"
     },roomURL !== null && React__default["default"].createElement("model",{
         src: roomURL || "block-model.glb",
@@ -77,26 +103,27 @@ function app() {
     })))
 
 }
-const initialState = {// ...
+const initialState = {
+    
 };
 function getStore() {
     let state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
-    const options = app().options;
+    //let options = Object.values(rooms)
+    
     return {
         state,
         actions: {
-            load(state, time) {
-                if (state.action === 'play') return;
-                state.time = time;
-                state.action = 'play';
-            }
+            /*update(state) {
+                options = Object.values(rooms)
+                console.log("rooms in getStore:")
+                console.log(options)
+              }*/
         },
-        // legacy non-uniform scale
         fields:  [{
-            key: 'roomId',
-            label: 'ROOM id',
+            key: 'label',
+            label: 'Label:',
             type: 'text',
-            instant: false
+            descriptor: true
         },{
             key: 'ccz',
             label: 'ROOMs',
@@ -113,7 +140,7 @@ function getStore() {
             key: 'room',
             label: 'ROOM',
             type: 'dropdown',
-            options: options,
+            options: all.roomsOptions
         },{
             key: 'collision',
             label: 'Collision',
