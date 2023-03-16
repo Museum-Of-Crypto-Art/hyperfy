@@ -1,6 +1,6 @@
 {
   "id": "moca-rooms-v1",
   "name": "ROOMs",
-  "description": null,
+  "description": "Spawn MOCA ROOMs in your world",
   "image": "image.png"
 }
