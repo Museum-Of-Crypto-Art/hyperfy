@@ -172,8 +172,8 @@ function app() {
   )
 }
 const initialState = {
-  url: null,
-  address: null,
+  //url: null,
+  //address: null,
 }
 function getStore() {
   let state =
