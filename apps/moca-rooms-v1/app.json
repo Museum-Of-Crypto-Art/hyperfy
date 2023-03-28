@@ -2,5 +2,7 @@
   "id": "moca-rooms-v1",
   "name": "ROOMs",
   "description": "Spawn MOCA ROOMs in your world",
-  "image": "image.png"
+  "image": "image.png",
+  "category": "objects",
+  "public": true
 }

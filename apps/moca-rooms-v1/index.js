@@ -34,8 +34,12 @@ function app() {
             'Content-Type': 'application/json',
           },
         })
-        console.log('ROOM loaded', data)
-        dispatch('update', data)
+        if(data){
+          console.log('ROOM loaded', data)
+          dispatch('update', data)
+        }else{
+          console.log('There is no ROOM '+roomId)
+        }
       } catch (e) {
         console.error(e)
       }
@@ -55,8 +59,14 @@ function app() {
             'Content-Type': 'application/json',
           },
         })
-        console.log('ROOM loaded', data)
-        dispatch('update', data)
+        
+        if(data){
+          console.log('ROOM loaded', data)
+          dispatch('update', data)
+        }else{
+          console.log('There is no ROOM '+roomId)
+        }
+        
       } catch (e) {
         console.error(e)
       }
@@ -74,6 +84,7 @@ function app() {
             : roomData.room.model
           : roomData.room.model
       )
+      roomData.room.updatedBy ? console.log("This ROOM has been curated by "+roomData.room.updatedBy): console.log("No curation has been saved for room "+roomId+" yet. The empty ROOM is loaded instead. If ROOM "+roomId+" is yours, go to https://rooms.museumofcryptoart.com/rooms/"+roomId+" and save a curation for this ROOM.")
     } catch (e) {
       console.error(e)
     }
