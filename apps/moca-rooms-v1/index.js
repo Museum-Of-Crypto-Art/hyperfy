@@ -11,10 +11,15 @@ function _interopDefaultLegacy(e) {
 
 var React__default = /*#__PURE__*/ _interopDefaultLegacy(React)
 
+const sendInfo = (msg, world) => {
+  editing && world.chat(msg, true)
+  console.log(msg)
+}
+
 function app() {
   const world = hyperfy.useWorld()
   const fields = hyperfy.useFields()
-
+  const editing = hyperfy.useEditing()
   const loadRoomCurated = fields.curated
   const roomId = fields.roomId
 
@@ -22,9 +27,14 @@ function app() {
 
   const [roomData, dispatch] = hyperfy.useSyncState(state => state.data)
 
+  const sendInfo = msg => {
+    editing && world.chat(msg, true)
+    console.log(msg)
+  }
+
   React.useEffect(() => {
     if (!world.isClient) return
-    if (roomId === null) return
+    if (roomId === '') return
     async function getRoom() {
       try {
         const data = await world.http({
@@ -34,11 +44,9 @@ function app() {
             'Content-Type': 'application/json',
           },
         })
-        if(data){
-          console.log('ROOM loaded', data)
+        if (data) {
+          sendInfo('ROOM #' + roomId + ' loaded', world)
           dispatch('update', data)
-        }else{
-          console.log('There is no ROOM '+roomId)
         }
       } catch (e) {
         console.error(e)
@@ -59,14 +67,13 @@ function app() {
             'Content-Type': 'application/json',
           },
         })
-        
-        if(data){
-          console.log('ROOM loaded', data)
+
+        if (data) {
+          sendInfo('ROOM #' + roomId + ' loaded', world)
           dispatch('update', data)
-        }else{
-          console.log('There is no ROOM '+roomId)
+        } else {
+          sendInfo('ROOM #' + roomId + ' does not exist.', world)
         }
-        
       } catch (e) {
         console.error(e)
       }
@@ -77,14 +84,29 @@ function app() {
   React.useEffect(() => {
     if (!roomData.room) return
     try {
-      setRoomURL(
-        loadRoomCurated
-          ? roomData.room.updatedBy
-            ? roomData.room.model_curated
-            : roomData.room.model
-          : roomData.room.model
-      )
-      roomData.room.updatedBy ? console.log("This ROOM has been curated by "+roomData.room.updatedBy): console.log("No curation has been saved for room "+roomId+" yet. The empty ROOM is loaded instead. If ROOM "+roomId+" is yours, go to https://rooms.museumofcryptoart.com/rooms/"+roomId+" and save a curation for this ROOM.")
+      if (loadRoomCurated) {
+        if (roomData.room.updatedBy) {
+          setRoomURL(roomData.room.model_curated)
+          sendInfo(
+            'This ROOM has been curated by ' + roomData.room.updatedBy,
+            world
+          )
+        } else {
+          setRoomURL(roomData.room.model)
+          sendInfo(
+            'No curation has been saved for room ' +
+              roomId +
+              ' yet. The empty ROOM is loaded instead. If ROOM ' +
+              roomId +
+              ' is yours, go to https://rooms.museumofcryptoart.com/rooms/' +
+              roomId +
+              ' and save a curation for this ROOM.',
+            world
+          )
+        }
+      } else {
+        setRoomURL(roomData.room.model)
+      }
     } catch (e) {
       console.error(e)
     }
