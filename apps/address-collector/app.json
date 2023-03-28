@@ -1,0 +1,8 @@
+{
+  "id": "address-collector",
+  "name": "Adresses",
+  "description": null,
+  "image": "image.png",
+  "category": "tools",
+  "public": true
+}

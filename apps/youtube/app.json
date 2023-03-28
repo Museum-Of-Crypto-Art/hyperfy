@@ -1,0 +1,9 @@
+{
+    "id": "youtube",
+    "name": "YouTube",
+    "description": "Play YouTube Videos",
+    "image": "image.png",
+    "category": "objects",
+    "public": true
+  }
+  
